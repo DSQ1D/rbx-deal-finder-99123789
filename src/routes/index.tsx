@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+
 import { Search, Zap, Wallet, Star, Scale, Bell, ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -69,19 +70,6 @@ function Index() {
               >
                 <Search className="h-5 w-5" /> Найти цены
               </Button>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-muted-foreground">
-              <span>Например:</span>
-              {["Robux", "Brainrot", "Kitsune", "Dragonfly", "Huge Cat"].map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setQ(s)}
-                  className="rounded-full border border-border bg-card px-3 py-1 transition-colors hover:border-primary/50 hover:text-foreground"
-                >
-                  {s}
-                </button>
-              ))}
             </div>
           </form>
         </div>
