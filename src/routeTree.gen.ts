@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as IndexRouteImport } from './routes/index'
@@ -23,6 +24,11 @@ const TrackingRoute = TrackingRouteImport.update({
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -45,6 +51,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
+  '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/tracking': typeof TrackingRoute
 }
@@ -52,6 +59,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
+  '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/tracking': typeof TrackingRoute
 }
@@ -60,21 +68,36 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
+  '/history': typeof HistoryRoute
   '/search': typeof SearchRoute
   '/tracking': typeof TrackingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/compare' | '/favorites' | '/search' | '/tracking'
+  fullPaths:
+    | '/'
+    | '/compare'
+    | '/favorites'
+    | '/history'
+    | '/search'
+    | '/tracking'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compare' | '/favorites' | '/search' | '/tracking'
-  id: '__root__' | '/' | '/compare' | '/favorites' | '/search' | '/tracking'
+  to: '/' | '/compare' | '/favorites' | '/history' | '/search' | '/tracking'
+  id:
+    | '__root__'
+    | '/'
+    | '/compare'
+    | '/favorites'
+    | '/history'
+    | '/search'
+    | '/tracking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CompareRoute: typeof CompareRoute
   FavoritesRoute: typeof FavoritesRoute
+  HistoryRoute: typeof HistoryRoute
   SearchRoute: typeof SearchRoute
   TrackingRoute: typeof TrackingRoute
 }
@@ -93,6 +116,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -123,6 +153,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CompareRoute: CompareRoute,
   FavoritesRoute: FavoritesRoute,
+  HistoryRoute: HistoryRoute,
   SearchRoute: SearchRoute,
   TrackingRoute: TrackingRoute,
 }
