@@ -83,6 +83,105 @@ function warn(message: string): void {
 }
 
 // ---------------------------------------------------------------------------
+// Diagnostic (runs once per process, first search() call only)
+// ---------------------------------------------------------------------------
+
+let diagnosticDone = false;
+
+/**
+ * Fetch one category URL and emit a structured diagnostic report.
+ * Runs once per process lifetime so it never floods the logs.
+ * Does not touch the parser or affect search results.
+ */
+async function diagnoseFetch(path: string): Promise<void> {
+  const url = `${BASE_URL}${path}`;
+  const divider = "─".repeat(60);
+
+  log(`\n${divider}`);
+  log(`DIAGNOSTIC — ${url}`);
+  log(divider);
+
+  let res: Response;
+  let html: string;
+
+  try {
+    res = await fetch(url, {
+      headers: {
+        "User-Agent": USER_AGENT,
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": ACCEPT_LANGUAGE,
+      },
+      // fetch() follows redirects automatically; res.url is the final URL.
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    warn(`DIAGNOSTIC — request failed: ${reason}`);
+    log(divider);
+    return;
+  }
+
+  // --- Final URL (after redirects) ----------------------------------------
+  log(`Final URL   : ${res.url}`);
+  log(`Redirected  : ${res.url !== url ? `yes → ${res.url}` : "no"}`);
+
+  // --- HTTP status -----------------------------------------------------------
+  log(`HTTP status : ${res.status} ${res.statusText}`);
+
+  // --- Response headers ------------------------------------------------------
+  log("Response headers:");
+  res.headers.forEach((value, name) => {
+    log(`  ${name}: ${value}`);
+  });
+
+  // --- Body ------------------------------------------------------------------
+  try {
+    html = await res.text();
+  } catch (err) {
+    const reason = err instanceof Error ? err.message : String(err);
+    warn(`DIAGNOSTIC — could not read body: ${reason}`);
+    log(divider);
+    return;
+  }
+
+  log(`Body length : ${html.length} bytes`);
+
+  const snippet = html.slice(0, 500).replace(/\s+/g, " ").trim();
+  log(`First 500ch : ${snippet}`);
+
+  // --- Content signals -------------------------------------------------------
+  const lower = html.toLowerCase();
+
+  const hasTcItem      = lower.includes("tc-item");
+  const hasCaptcha     = lower.includes("captcha");
+  const hasLogin       = lower.includes("login") || lower.includes("войти");
+  const hasCloudflare  =
+    lower.includes("cloudflare") ||
+    res.headers.get("server")?.toLowerCase().includes("cloudflare") === true ||
+    res.headers.has("cf-ray") ||
+    lower.includes("cf-browser-verification") ||
+    lower.includes("attention required");
+
+  log(`Has tc-item        : ${hasTcItem}`);
+  log(`Has captcha        : ${hasCaptcha}`);
+  log(`Has login prompt   : ${hasLogin}`);
+  log(`Has Cloudflare     : ${hasCloudflare}`);
+
+  // Extra Cloudflare detail when detected
+  if (hasCloudflare) {
+    const cfRay = res.headers.get("cf-ray");
+    const server = res.headers.get("server");
+    warn(
+      `DIAGNOSTIC — Cloudflare detected. ` +
+        `cf-ray=${cfRay ?? "absent"} server=${server ?? "absent"}`,
+    );
+  }
+
+  log(divider);
+}
+
+// ---------------------------------------------------------------------------
 // HTTP fetch
 // ---------------------------------------------------------------------------
 
@@ -272,6 +371,15 @@ export const funpay: ItemProvider = {
       `search("${query}") — base=${BASE_URL} timeout=${FETCH_TIMEOUT_MS}ms ` +
         `categories=${CATEGORY_PATHS.length}`,
     );
+
+    // Run the diagnostic once per process on the first search call.
+    if (!diagnosticDone) {
+      diagnosticDone = true;
+      // Fire-and-forget: diagnostic runs alongside the real fetches.
+      diagnoseFetch(CATEGORY_PATHS[0]!).catch((err) => {
+        warn(`DIAGNOSTIC — unexpected error: ${err instanceof Error ? err.message : String(err)}`);
+      });
+    }
 
     // Single AbortSignal that fires on caller cancellation OR our own timeout.
     const timeout = AbortSignal.timeout(FETCH_TIMEOUT_MS);
