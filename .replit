@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web"]
+modules = ["nodejs-20", "web", "python-base-3.13"]
 [agent]
 expertMode = true
 
@@ -25,6 +25,10 @@ author = "agent"
 task = "shell.exec"
 args = "bun run dev"
 waitForPort = 8080
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
 
 [[ports]]
 localPort = 8080
