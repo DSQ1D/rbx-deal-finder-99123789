@@ -12,4 +12,8 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Replit doesn't support IPv6 — override the lovable config default of "::"
+  vite: {
+    server: { host: "0.0.0.0" },
+  },
 });
