@@ -47,66 +47,75 @@ function TrackingPage() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 animate-fade-in">
           {items.map((d) => {
             const s = statusMap[d.status];
             return (
               <div
                 key={d.id}
-                className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 rounded-2xl border border-border bg-gradient-card p-5 sm:grid-cols-[minmax(0,2fr)_1fr_1fr_auto]"
+                className="rounded-2xl border border-border bg-gradient-card p-4 transition-all hover:border-primary/40 hover:shadow-glow sm:p-5"
               >
-                <div className="min-w-0">
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                    {d.marketplace}
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-4 sm:grid-cols-[minmax(0,2fr)_1fr_auto] sm:items-center">
+                  <div className="min-w-0">
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                      {d.marketplace}
+                    </div>
+                    <div className="truncate font-display text-base font-bold sm:text-lg">
+                      {d.title}
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      Проверено: {fmt(d.lastCheckedAt)}
+                    </div>
                   </div>
-                  <div className="truncate font-display text-lg font-bold">{d.title}</div>
-                  <div className="mt-1 text-xs text-muted-foreground">
-                    Проверено: {fmt(d.lastCheckedAt)}
+                  <div className="text-right sm:text-left">
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                      Цена
+                    </div>
+                    <div className="font-display text-lg font-black text-gradient sm:text-xl">
+                      {d.price}
+                    </div>
                   </div>
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">Цена</div>
-                  <div className="font-display text-xl font-black text-gradient">{d.price}</div>
-                </div>
-                <div className="col-span-2 sm:col-span-1">
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
-                      s.cls,
-                    )}
-                  >
-                    {s.label}
-                  </span>
-                </div>
-                <div className="col-span-2 flex items-center justify-end gap-3 sm:col-span-1">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    Следить
-                    <Switch
-                      checked={d.active}
-                      onCheckedChange={(v) => store.setTrackActive(d.id, v)}
-                    />
+                  <div className="col-span-2 flex flex-wrap items-center justify-between gap-3 border-t border-border/60 pt-3 sm:col-span-1 sm:border-none sm:pt-0">
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold",
+                        s.cls,
+                      )}
+                    >
+                      {s.label}
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                        Следить
+                        <Switch
+                          checked={d.active}
+                          onCheckedChange={(v) => store.setTrackActive(d.id, v)}
+                        />
+                      </label>
+                      <a
+                        href={d.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                        aria-label="Открыть"
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                      <button
+                        onClick={() => store.removeTrack(d.id)}
+                        className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
+                        aria-label="Удалить"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
-                  <a
-                    href={d.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground hover:border-primary/40 hover:text-foreground"
-                    aria-label="Открыть"
-                  >
-                    <ExternalLink className="h-4 w-4" />
-                  </a>
-                  <button
-                    onClick={() => store.removeTrack(d.id)}
-                    className="grid h-9 w-9 place-items-center rounded-lg border border-border text-muted-foreground hover:border-destructive hover:text-destructive"
-                    aria-label="Удалить"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
                 </div>
               </div>
             );
           })}
         </div>
+
       )}
     </div>
   );
