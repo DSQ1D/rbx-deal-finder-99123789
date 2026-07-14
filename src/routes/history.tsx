@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { store, useStore } from "@/lib/store";
 
+
 export const Route = createFileRoute("/history")({
   component: HistoryPage,
 });

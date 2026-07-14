@@ -118,4 +118,7 @@ export const store = {
   clearHistory() {
     set((s) => ({ ...s, history: [] }));
   },
+  removeHistory(at: number) {
+    set((s) => ({ ...s, history: s.history.filter((h) => h.at !== at) }));
+  },
 };
