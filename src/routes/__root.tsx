@@ -87,14 +87,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "RBXDeals — Поиск и сравнение цен Roblox" },
       {
         property: "og:description",
-        content: "Находи лучшие предложения Roblox за секунды.",
+        content: "RBXDeals — сервис для поиска, сравнения и отслеживания цен на товары Roblox с разных торговых площадок.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "RBXDeals — Поиск и сравнение цен Roblox" },
+      { name: "twitter:description", content: "RBXDeals — сервис для поиска, сравнения и отслеживания цен на товары Roblox с разных торговых площадок." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3faf9f0-b898-4eb8-a349-d4fea1f5a48a/id-preview-5b4e9922--29c71ce3-0e85-4c0b-9a7b-322279092c56.lovable.app-1784049584087.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/d3faf9f0-b898-4eb8-a349-d4fea1f5a48a/id-preview-5b4e9922--29c71ce3-0e85-4c0b-9a7b-322279092c56.lovable.app-1784049584087.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
