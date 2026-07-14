@@ -359,6 +359,107 @@ function formatPrice(raw: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Debug probe (used by GET /api/debug/funpay — never called by search())
+// ---------------------------------------------------------------------------
+
+export interface CategoryProbeResult {
+  url: string;
+  httpStatus: number | null;   // null when a network error prevented any response
+  httpStatusText: string | null;
+  itemsParsed: number | null;  // null when fetch failed before parsing
+  error: string | null;
+}
+
+/**
+ * Fetch every category URL once and return a structured per-URL report.
+ * Independent of search() — never shares state or side-effects with it.
+ */
+export async function debugProbe(): Promise<CategoryProbeResult[]> {
+  const results = await Promise.allSettled(
+    CATEGORY_PATHS.map(async (path): Promise<CategoryProbeResult> => {
+      const url = `${BASE_URL}${path}`;
+      let res: Response;
+
+      try {
+        res = await fetch(url, {
+          headers: {
+            "User-Agent": USER_AGENT,
+            Accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": ACCEPT_LANGUAGE,
+          },
+          signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        });
+      } catch (err) {
+        return {
+          url,
+          httpStatus: null,
+          httpStatusText: null,
+          itemsParsed: null,
+          error: err instanceof Error ? err.message : String(err),
+        };
+      }
+
+      if (!res.ok) {
+        return {
+          url,
+          httpStatus: res.status,
+          httpStatusText: res.statusText,
+          itemsParsed: null,
+          error: `HTTP ${res.status} ${res.statusText}`,
+        };
+      }
+
+      let html: string;
+      try {
+        html = await res.text();
+      } catch (err) {
+        return {
+          url,
+          httpStatus: res.status,
+          httpStatusText: res.statusText,
+          itemsParsed: null,
+          error: `Body read failed: ${err instanceof Error ? err.message : String(err)}`,
+        };
+      }
+
+      let itemsParsed: number;
+      try {
+        itemsParsed = parseListings(html, url).length;
+      } catch (err) {
+        return {
+          url,
+          httpStatus: res.status,
+          httpStatusText: res.statusText,
+          itemsParsed: null,
+          error: `Parse failed: ${err instanceof Error ? err.message : String(err)}`,
+        };
+      }
+
+      return {
+        url,
+        httpStatus: res.status,
+        httpStatusText: res.statusText,
+        itemsParsed,
+        error: null,
+      };
+    }),
+  );
+
+  return results.map((r, i) =>
+    r.status === "fulfilled"
+      ? r.value
+      : {
+          url: `${BASE_URL}${CATEGORY_PATHS[i]}`,
+          httpStatus: null,
+          httpStatusText: null,
+          itemsParsed: null,
+          error: r.reason instanceof Error ? r.reason.message : String(r.reason),
+        },
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Provider export
 // ---------------------------------------------------------------------------
 

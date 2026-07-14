@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { searchRouter } from "./routes/search.js";
+import { debugRouter } from "./routes/debug.js";
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 app.use("/api", searchRouter);
+app.use("/api/debug", debugRouter);
 
 const port = Number(process.env.PORT ?? 3001);
 app.listen(port, () => {
