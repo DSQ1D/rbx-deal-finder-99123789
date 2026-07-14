@@ -14,6 +14,9 @@ export default defineConfig({
   },
   // Replit doesn't support IPv6 — override the lovable config default of "::"
   vite: {
-    server: { host: "0.0.0.0" },
+    server: {
+      host: "0.0.0.0",
+      allowedHosts: ["24fe1f4f-ba6f-4af1-a894-1f9c530eeaf5-00-3q8eek2kodpqo.worf.replit.dev"],
+    },
   },
 });
