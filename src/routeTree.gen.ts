@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrackingRouteImport } from './routes/tracking'
 import { Route as SearchRouteImport } from './routes/search'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TrackingRoute = TrackingRouteImport.update({
+  id: '/tracking',
+  path: '/tracking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/search': typeof SearchRoute
+  '/tracking': typeof TrackingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/search': typeof SearchRoute
+  '/tracking': typeof TrackingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/compare': typeof CompareRoute
   '/favorites': typeof FavoritesRoute
   '/search': typeof SearchRoute
+  '/tracking': typeof TrackingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/compare' | '/favorites' | '/search'
+  fullPaths: '/' | '/compare' | '/favorites' | '/search' | '/tracking'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compare' | '/favorites' | '/search'
-  id: '__root__' | '/' | '/compare' | '/favorites' | '/search'
+  to: '/' | '/compare' | '/favorites' | '/search' | '/tracking'
+  id: '__root__' | '/' | '/compare' | '/favorites' | '/search' | '/tracking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,10 +76,18 @@ export interface RootRouteChildren {
   CompareRoute: typeof CompareRoute
   FavoritesRoute: typeof FavoritesRoute
   SearchRoute: typeof SearchRoute
+  TrackingRoute: typeof TrackingRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tracking': {
+      id: '/tracking'
+      path: '/tracking'
+      fullPath: '/tracking'
+      preLoaderRoute: typeof TrackingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/search': {
       id: '/search'
       path: '/search'
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompareRoute: CompareRoute,
   FavoritesRoute: FavoritesRoute,
   SearchRoute: SearchRoute,
+  TrackingRoute: TrackingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
