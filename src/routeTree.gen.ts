@@ -17,6 +17,7 @@ import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiSearchRouteImport } from './routes/api/search'
 
 const TrackingRoute = TrackingRouteImport.update({
   id: '/tracking',
@@ -58,6 +59,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSearchRoute = ApiSearchRouteImport.update({
+  id: '/api/search',
+  path: '/api/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tracking': typeof TrackingRoute
+  '/api/search': typeof ApiSearchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tracking': typeof TrackingRoute
+  '/api/search': typeof ApiSearchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tracking': typeof TrackingRoute
+  '/api/search': typeof ApiSearchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/tracking'
+    | '/api/search'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/tracking'
+    | '/api/search'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/tracking'
+    | '/api/search'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TrackingRoute: typeof TrackingRoute
+  ApiSearchRoute: typeof ApiSearchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/search': {
+      id: '/api/search'
+      path: '/api/search'
+      fullPath: '/api/search'
+      preLoaderRoute: typeof ApiSearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TrackingRoute: TrackingRoute,
+  ApiSearchRoute: ApiSearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
