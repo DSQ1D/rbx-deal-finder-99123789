@@ -92,8 +92,8 @@ function SearchPage() {
           ) : isError ? (
             <EmptyState
               icon={AlertTriangle}
-              title="Не удалось загрузить результаты"
-              description="Проверьте подключение к интернету и попробуйте ещё раз."
+              title="Сервер поиска временно недоступен."
+              description="Мы не смогли связаться с backend API. Проверьте подключение и попробуйте снова через минуту."
               action={
                 <Button onClick={() => refetch()} className="bg-gradient-primary">
                   Повторить
